@@ -41,19 +41,19 @@ class IrisDF:
 
 
 class IrisNN:
-    def __init__(self):
+    def __init__(self, gen_randomly=False):
         # define Hiperparameters
         self.input_size = 4
         self.hidden_size = 6
         self.output_size = 3
 
-        # init weights with random values
-        self.W1 = np.random.rand(self.input_size, self.hidden_size)
-        self.W2 = np.random.rand(self.hidden_size, self.output_size)
-
-        # init biases with random values
-        self.b1 = np.random.rand(self.input_size, self.hidden_size)
-        self.b2 = np.random.rand(self.hidden_size, self.output_size)
+        if gen_randomly:
+            # init weights with random values
+            self.W1 = np.random.rand(self.input_size, self.hidden_size)
+            self.W2 = np.random.rand(self.hidden_size, self.output_size)
+            # init biases with random values
+            self.b1 = np.random.rand(self.hidden_size)
+            self.b2 = np.random.rand(self.output_size)
 
     def sigmoid(self, z):
         return 1 / (1 + np.exp(-z))
@@ -75,5 +75,33 @@ class IrisNN:
         z3 = np.dot(a2, self.W2) + self.b2
         self.y_hat = self.softmax(z3)
 
-    def mse(self, y):
-        return
+    def compute_mse(self, X_train, y_train):
+        # mse_sum = 0
+        # for i, j in zip(y, self.y_hat):
+        #     mse_sum += sum((j - i)**2)
+        # return mse_sum / float(len(y))
+        self.forward(X_train)
+        return sum(sum((y_train - self.y_hat)**2)) / len(y_train)
+
+    def compute_accuracy(self, X_test, y_test):
+        self.forward(X_test)
+        num_correct = 0
+        for i, j in zip(y_test, self.y_hat):
+            if i.argmax() == j.argmax():
+                num_correct += 1
+        return float(num_correct) / len(y_test)
+
+    def merge_params(self):
+        # used in PSO as particle position
+        return np.concatenate([self.W1.flatten(), self.b1,\
+               self.W2.flatten(), self.b2], axis=0) 
+
+    def unpack_params(self, data):
+        offset = self.input_size * self.hidden_size
+        self.W1 = data[:offset].reshape(self.input_size, self.hidden_size)
+        self.b1 = data[offset:offset + self.hidden_size]
+        offset += self.hidden_size
+        self.W2 = data[offset:offset + self.hidden_size * self.output_size]\
+                               .reshape(self.hidden_size, self.output_size)
+        offset += self.hidden_size * self.output_size
+        self.b2 = data[offset:]
