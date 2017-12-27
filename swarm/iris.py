@@ -28,18 +28,6 @@ class IrisDF:
                 y.append([1, 0, 0])
         return np.array(y)
 
-    def subset(self, train=24, test=6):
-        # reshapes the dataset into a smaller subset
-        if train > len(self.X_train) or \
-            test > len(self.X_test):
-            return
-        self.X_train = self.X_train[:train]
-        self.y_train = self.y_train[:train]
-        self.X_test = self.X_test[:test]
-        self.y_test = self.y_test[:test]
-        
-
-
 class IrisNN:
     def __init__(self, gen_randomly=False):
         # define Hiperparameters
