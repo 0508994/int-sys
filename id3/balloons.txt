@@ -1,4 +1,4 @@
-color, size, act, age, inflated
+color,size_t,act,age,inflated
 YELLOW,SMALL,STRETCH,ADULT,T
 
 YELLOW,SMALL,STRETCH,ADULT,T

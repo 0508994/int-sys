@@ -1,0 +1,15 @@
+﻿izgled_vremena,temperatura,vlažnost,vetar,klasa
+sunčano,toplo,visoka,slab,nepogodno
+sunčano,toplo,visoka,jak,pogodno
+oblačno,toplo,visoka,slab,pogodno
+kiša,prijatno,visoka,slab,nepogodno
+kiša,hladno,normalna,slab,nepogodno
+kiša,hladno,normalna,jak,nepogodno
+oblačno,hladno,normalna,jak,nepogodno
+sunčano,prijatno,visoka,slab,pogodno
+sunčano,hladno,normalna,slab,pogodno
+kiša,prijatno,normalna,slab,nepogodno
+sunčano,prijatno,normalna,jak,pogodno
+oblačno,prijatno,visoka,jak,pogodno
+oblačno,toplo,normalna,slab,pogodno
+kiša,prijatno,visoka,jak,nepogodno
