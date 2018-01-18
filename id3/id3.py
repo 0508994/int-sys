@@ -17,7 +17,7 @@ class SimpleTree:
         self.root = root
 
     def fit(self, df, label='label'):
-        self.label = 'label'
+        self.label = label
         self.root = id3(df, label)
 
     def test_single(self, sample):
@@ -32,6 +32,17 @@ class SimpleTree:
                 # recurse
                 return test(node)
         return test(self.root)
+
+    def show_accuracy(self, df):
+        d = {'Label': [], 'Predicted':[]}
+        for index, row in df.iterrows():
+            d['Label'].append(row[self.label])
+            d['Predicted'].append(self.test_single(row))
+             
+        # for head formating
+        acc_f = pd.DataFrame(data=d)      
+        print(acc_f.head(len(acc_f.index)))
+    
 
 
 # pandas only
