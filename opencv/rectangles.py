@@ -1,0 +1,1 @@
+# https://stackoverflow.com/questions/11424002/how-to-detect-simple-geometric-shapes-using-opencv

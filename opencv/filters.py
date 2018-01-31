@@ -1,6 +1,7 @@
 import sys
 import numpy as np
 import cv2
+import argparse
 
 # https://stackoverflow.com/questions/23749968/why-datatype-has-to-be-uint8-in-opencv-python-wrapper 
 
@@ -59,34 +60,51 @@ def contrast(img, val):
 def edge(img, kernel='laplacian'):
     gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
 
-    blured = cv2.GaussianBlur(gray, (3, 3), 0)
-    #blured = gray
+    blurred = cv2.GaussianBlur(gray, (3, 3), 0)
+ 
     if kernel == 'laplacian':
-        return cv2.Laplacian(blured, cv2.CV_64F)
+        return cv2.Laplacian(blurred, cv2.CV_64F)
     elif kernel == 'sobelx':
-        return cv2.Sobel(blured, cv2.CV_64F, 1, 0, ksize=5)
+        return cv2.Sobel(blurred, cv2.CV_64F, 1, 0, ksize=5)
     else:
-        return cv2.Sobel(blured, cv2.CV_64F, 0, 1, ksize=5)
+        return cv2.Sobel(blurred, cv2.CV_64F, 0, 1, ksize=5)
 
 
 def main():
 #   filters.py <filter_name> <image_path> <arg>
 #   e:python filters.py brightness img/bridge.jpg 129
-    try:
-        print(sys.argv)
-        img = cv2.imread(sys.argv[2])
-        if sys.argv[1] == 'brightness':
-            img = brightness(img, int(sys.argv[3]))
-        elif sys.argv[1] == 'contrast':
-            img = contrast(img, int(sys.argv[3]))
-        else:
-            img = edge(img, kernel=sys.argv[3])
-    except Exception as e:
-        print(e)
+    # try:
+    #     print(sys.argv)
+    #     img = cv2.imread(sys.argv[2])
+    #     if sys.argv[1] == 'brightness':
+    #         img = brightness(img, int(sys.argv[3]))
+    #     elif sys.argv[1] == 'contrast':
+    #         img = contrast(img, int(sys.argv[3]))
+    #     else:
+    #         img = edge(img, kernel=sys.argv[3])
+    # except Exception as e:
+    #     print(e)
 
-    cv2.imshow('image', img)
+
+    parser = argparse.ArgumentParser()
+    parser.add_argument('filter')
+    parser.add_argument('path')
+    parser.add_argument('arg')
+    args = parser.parse_args()
+
+
+    img = cv2.imread(args.path)
+    if args.filter == 'brightness':
+        img = brightness(img, int(args.arg))
+    elif args.filter == 'contrast':
+        img = contrast(img, int(args.arg))
+    else:
+        img = edge(img, kernel=args.arg)
+ 
+
+    cv2.imshow(args.filter, img)
     cv2.waitKey(0)
     cv2.destroyAllWindows()
 
-if __name__ == '__main__':
+if __name__  == '__main__':
     main()
