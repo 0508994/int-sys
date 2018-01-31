@@ -4,7 +4,7 @@ import cv2
 import argparse
 from scipy.spatial import distance as dist
 from collections import OrderedDict
-import imutils
+#import imutils
 
 
 
@@ -18,8 +18,6 @@ def detect_rects(path, min_t, max_t):
     contours = cv2.findContours(thresh, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)[1]
 
     for cnt in contours:
-#       To understand this, suppose you are trying to find a square in an image, but due to some problems in the image, you didn't
-#       get a perfect square, but a "bad shape" (As shown in first image below). Now you can use this function to approximate the shape.
 #       In this, second argument is called epsilon, which is maximum distance from contour to approximated contour. It is an accuracy parameter.
 #       A wise selection of epsilon is needed to get the correct output.
         approx = cv2.approxPolyDP(cnt, 0.01 * cv2.arcLength(cnt, True), True)
