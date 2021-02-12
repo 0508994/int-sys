@@ -1,22 +1,24 @@
 import pandas as pd
 import math
 
+
 class Node:
     def __init__(self, attr_name=None, label_val=None):
         # atribute that node is testing
         self.attr_name = attr_name
 
         # only leaf nodes have this value set
-        self.label_val = label_val 
+        self.label_val = label_val
 
         # key = test result, value = pointer to node
         self.children = {}
 
+
 class SimpleTree:
-    def __init__(self, root=None) :
+    def __init__(self, root=None):
         self.root = root
 
-    def fit(self, df, label='label'):
+    def fit(self, df, label="label"):
         self.label = label
         self.root = id3(df, label)
 
@@ -31,18 +33,18 @@ class SimpleTree:
                 node = node.children[part_res]
                 # recurse
                 return test(node)
+
         return test(self.root)
 
     def show_accuracy(self, df):
-        d = {'Label': [], 'Predicted':[]}
+        d = {"Label": [], "Predicted": []}
         for index, row in df.iterrows():
-            d['Label'].append(row[self.label])
-            d['Predicted'].append(self.test_single(row))
-             
+            d["Label"].append(row[self.label])
+            d["Predicted"].append(self.test_single(row))
+
         # for head formating
-        acc_f = pd.DataFrame(data=d)      
+        acc_f = pd.DataFrame(data=d)
         print(acc_f.head(len(acc_f.index)))
-    
 
 
 # pandas only
@@ -54,11 +56,13 @@ def compute_entropy(df, label):
     nr_classes = len(classes_info)
     entropy = 0
     for c in classes_info:
-        pc = float(c / nr_entries) 
-        if nr_classes == 1 or pc == 1: continue
+        pc = float(c / nr_entries)
+        if nr_classes == 1 or pc == 1:
+            continue
         entropy += -pc * math.log(pc, nr_classes)
 
     return entropy
+
 
 def compute_attr_fitness(df, entropy, attr_name, label):
     nr_entries = len(df.index)
@@ -70,19 +74,21 @@ def compute_attr_fitness(df, entropy, attr_name, label):
 
     sum = 0
     for ai in attr_info_values:
-        if ai == label: continue
+        if ai == label:
+            continue
         subseti = df.where(df[attr_name] == ai)
-        sum +=  float(attr_info[ai] / nr_entries) * compute_entropy(subseti, label)
+        sum += float(attr_info[ai] / nr_entries) * compute_entropy(subseti, label)
 
     return entropy - sum
 
+
 def id3(df, label):
-    #df = df.reset_index(drop=False)
-    node = Node() # this is the return value
+    # df = df.reset_index(drop=False)
+    node = Node()  # this is the return value
     entropy = compute_entropy(df, label)
     if entropy == 0:
-    # set node as leaf and return it
-        #node.label_val = df.get_value(0, label)
+        # set node as leaf and return it
+        # node.label_val = df.get_value(0, label)
         node.label_val = df.iloc[0][label]
         return node
     else:
@@ -91,7 +97,8 @@ def id3(df, label):
         attr_list = list(df)
         fits = {}
         for a in attr_list:
-            if a == label: continue
+            if a == label:
+                continue
             fits[a] = compute_attr_fitness(df, entropy, a, label)
 
         fittest = max(fits, key=fits.get)
@@ -100,24 +107,26 @@ def id3(df, label):
         node.attr_name = fittest
 
         for v in attr_values:
-            node.children[v] = id3(df.where(df[fittest] == v) \
-                                     .drop([fittest], axis=1) \
-                                     .dropna(),\
-                                   label)
+            node.children[v] = id3(
+                df.where(df[fittest] == v).drop([fittest], axis=1).dropna(), label
+            )
 
         return node
 
 
-
-
-if __name__ == '__main__':
+if __name__ == "__main__":
     #  d = {'col1': [1, 1, 1, 1, 1, 1, 1, 1, 1, 5, 5, 5, 5, 5]}
     #  df = pd.DataFrame(data=d)
     #  print(compute_entropy(df, 'col1'))
 
-    df = pd.read_csv('bas.txt')
+    df = pd.read_csv("bas.txt")
     tree = SimpleTree()
-    tree.fit(df, 'klasa')
+    tree.fit(df, "klasa")
 
-    sample = {'izgled_vremena':'sunčano', 'temperatura':'toplo', 'vetar':'slab', 'vlažnost': 'visoka'}
+    sample = {
+        "izgled_vremena": "sunčano",
+        "temperatura": "toplo",
+        "vetar": "slab",
+        "vlažnost": "visoka",
+    }
     print(tree.test_single(sample))

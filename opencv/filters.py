@@ -3,19 +3,21 @@ import numpy as np
 import cv2
 import argparse
 
-# https://stackoverflow.com/questions/23749968/why-datatype-has-to-be-uint8-in-opencv-python-wrapper 
+# https://stackoverflow.com/questions/23749968/why-datatype-has-to-be-uint8-in-opencv-python-wrapper
+
 
 def brightness(img, val, inplace=False):
     assert val > 0
 
-#   uint8 overflow handling ...
-#   e: 222 + 50 = 16
+    #   uint8 overflow handling ...
+    #   e: 222 + 50 = 16
     limit = 255 - val
     img[img > limit] = 255
     img[img < limit] += val
 
     if not inplace:
-        return img # ...
+        return img  # ...
+
 
 def contrast_slow(img, val, inplace=False):
     factor = (259 * (val + 255)) / (255 * (259 - val))
@@ -27,15 +29,21 @@ def contrast_slow(img, val, inplace=False):
             blue = factor * (img.item(y, x, 2) - 128) + 128
             green = factor * (img.item(y, x, 1) - 128) + 128
             red = factor * (img.item(y, x, 0) - 128) + 128
-            
-            if blue > 255: blue = 255
-            if blue < 0: blue = 0
 
-            if green > 255: green = 255
-            if green < 0: green = 0
+            if blue > 255:
+                blue = 255
+            if blue < 0:
+                blue = 0
 
-            if red > 255: red = 255
-            if red < 0: red = 0
+            if green > 255:
+                green = 255
+            if green < 0:
+                green = 0
+
+            if red > 255:
+                red = 255
+            if red < 0:
+                red = 0
 
             img.itemset((y, x, 2), blue)
             img.itemset((y, x, 1), green)
@@ -43,6 +51,7 @@ def contrast_slow(img, val, inplace=False):
 
     if not inplace:
         return img
+
 
 def contrast(img, val):
     img = img.astype(np.int32)
@@ -54,25 +63,27 @@ def contrast(img, val):
 
     return img.astype(np.uint8)
 
+
 # cv2.Laplacian(src, ddepth, other_options...)
 # where ddepth is the desired depth of the destination image
 
-def edge(img, kernel='laplacian'):
+
+def edge(img, kernel="laplacian"):
     gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
 
     blurred = cv2.GaussianBlur(gray, (3, 3), 0)
- 
-    if kernel == 'laplacian':
+
+    if kernel == "laplacian":
         return cv2.Laplacian(blurred, cv2.CV_64F)
-    elif kernel == 'sobelx':
+    elif kernel == "sobelx":
         return cv2.Sobel(blurred, cv2.CV_64F, 1, 0, ksize=5)
     else:
         return cv2.Sobel(blurred, cv2.CV_64F, 0, 1, ksize=5)
 
 
 def main():
-#   filters.py <filter_name> <image_path> <arg>
-#   e:python filters.py brightness img/bridge.jpg 129
+    #   filters.py <filter_name> <image_path> <arg>
+    #   e:python filters.py brightness img/bridge.jpg 129
     # try:
     #     print(sys.argv)
     #     img = cv2.imread(sys.argv[2])
@@ -85,26 +96,24 @@ def main():
     # except Exception as e:
     #     print(e)
 
-
     parser = argparse.ArgumentParser()
-    parser.add_argument('filter')
-    parser.add_argument('path')
-    parser.add_argument('arg')
+    parser.add_argument("filter")
+    parser.add_argument("path")
+    parser.add_argument("arg")
     args = parser.parse_args()
 
-
     img = cv2.imread(args.path)
-    if args.filter == 'brightness':
+    if args.filter == "brightness":
         img = brightness(img, int(args.arg))
-    elif args.filter == 'contrast':
+    elif args.filter == "contrast":
         img = contrast(img, int(args.arg))
     else:
         img = edge(img, kernel=args.arg)
- 
 
     cv2.imshow(args.filter, img)
     cv2.waitKey(0)
     cv2.destroyAllWindows()
 
-if __name__  == '__main__':
+
+if __name__ == "__main__":
     main()

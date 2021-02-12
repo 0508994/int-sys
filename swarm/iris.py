@@ -3,18 +3,20 @@ from sklearn import datasets
 from sklearn.model_selection import train_test_split
 from sklearn import preprocessing
 
+
 class IrisDF:
     def __init__(self, normalize=True, test_size=0.3):
         iris = datasets.load_iris()
         X = None
         if normalize:
-            X = preprocessing.normalize(iris.data) 
+            X = preprocessing.normalize(iris.data)
         else:
             X = iris.data
         y = self.encode(iris.target)
 
-        self.X_train, self.X_test, self.y_train, self.y_test = \
-                train_test_split(X, y, test_size = test_size)
+        self.X_train, self.X_test, self.y_train, self.y_test = train_test_split(
+            X, y, test_size=test_size
+        )
 
     def encode(self, data):
         # encodes the target label y so it's compatible with nn output layer
@@ -27,6 +29,7 @@ class IrisDF:
             else:
                 y.append([1, 0, 0])
         return np.array(y)
+
 
 class IrisNN:
     def __init__(self, gen_randomly=False):
@@ -55,7 +58,7 @@ class IrisNN:
         div = np.sum(e_x, axis=1)
         div = div[:, np.newaxis]
         return e_x / div
-    
+
     def forward(self, X):
         # Propagate inputs through the network
         z2 = np.dot(X, self.W1) + self.b1
@@ -69,7 +72,7 @@ class IrisNN:
         #     mse_sum += sum((j - i)**2)
         # return mse_sum / float(len(y))
         self.forward(X_train)
-        return sum(sum((y_train - self.y_hat)**2)) / len(y_train)
+        return sum(sum((y_train - self.y_hat) ** 2)) / len(y_train)
 
     def compute_accuracy(self, X_test, y_test):
         self.forward(X_test)
@@ -81,15 +84,17 @@ class IrisNN:
 
     def merge_params(self):
         # used in PSO as particle position
-        return np.concatenate([self.W1.flatten(), self.b1,\
-               self.W2.flatten(), self.b2], axis=0) 
+        return np.concatenate(
+            [self.W1.flatten(), self.b1, self.W2.flatten(), self.b2], axis=0
+        )
 
     def unpack_params(self, data):
         offset = self.input_size * self.hidden_size
         self.W1 = data[:offset].reshape(self.input_size, self.hidden_size)
-        self.b1 = data[offset:offset + self.hidden_size]
+        self.b1 = data[offset : offset + self.hidden_size]
         offset += self.hidden_size
-        self.W2 = data[offset:offset + self.hidden_size * self.output_size]\
-                               .reshape(self.hidden_size, self.output_size)
+        self.W2 = data[offset : offset + self.hidden_size * self.output_size].reshape(
+            self.hidden_size, self.output_size
+        )
         offset += self.hidden_size * self.output_size
         self.b2 = data[offset:]
